@@ -1,0 +1,19 @@
+{
+  "name": "tdd-time-tracking-app",
+  "version": "1.0.0",
+  "description": "Create a work time tracking app with one employer and employees.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-vm-modules ./node_modules/.bin/jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "supertest": "^6.3.3"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
