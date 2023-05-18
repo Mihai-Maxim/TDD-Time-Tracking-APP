@@ -12,8 +12,9 @@ The employer has access to view the work history of any employee, while an emplo
 ## Tasks
 
 1. Create a `/login` endpoint that allows users (employees or employer) to log in to the platform using an email and password.  
-* The endpoint should return an Authorization token with a `200` status code if the credentials are valid.  
-* If the credentials are invalid, it should return a `401` status code.  
+* The endpoint returns an Authorization token with a `200` status code if the credentials are valid.  
+* If the credentials are invalid, the endpoints returns a `401` status code.  
+* If the credentials are not provided, the endpoint returns a `400` status code. 
 
 2. Create a `/logout` endpoint that logs the users out of the platform.  
 * It invalidates the Authorization token received from the `/login` endpoint and returns a `200` status code.  
