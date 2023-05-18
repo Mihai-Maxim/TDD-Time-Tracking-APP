@@ -178,11 +178,11 @@ describe('Work Time Tracking App Integration Tests', () => {
         .set('Authorization', `Bearer ${authToken}`)
         .expect(200);
   
-      expect(response.body).toBeInstanceOf(Array);
-      expect(response.body.length).toBeGreaterThan(0);
+      expect(response.body.history).toBeInstanceOf(Array);
+      expect(response.body.history.length).toBeGreaterThan(0);
   
 
-      const userHistoryItem = response.body[0];
+      const userHistoryItem = response.body.history[0];
       expect(userHistoryItem).toHaveProperty('email');
       expect(userHistoryItem).toHaveProperty('start_date');
       expect(userHistoryItem).toHaveProperty('end_date');
@@ -195,15 +195,36 @@ describe('Work Time Tracking App Integration Tests', () => {
         .set('Authorization', `Bearer ${employerToken}`)
         .expect(200);
   
-      expect(response.body).toBeInstanceOf(Array);
-      expect(response.body.length).toBeGreaterThan(0);
+      expect(response.body.history).toBeInstanceOf(Array);
+      expect(response.body.history.length).toBeGreaterThan(0);
   
   
-      const userHistoryItem = response.body[0];
+      const userHistoryItem = response.body.history[0];
       expect(userHistoryItem).toHaveProperty('email');
       expect(userHistoryItem).toHaveProperty('start_date');
       expect(userHistoryItem).toHaveProperty('end_date');
       expect(userHistoryItem).toHaveProperty('description');
+    });
+
+    test('should return the work history of a specific employee when q query parameter is provided', async () => {
+      const email = 'mihai.maxim@thinslices.com';
+      const response = await request(app)
+        .get(`/history?q=${email}`)
+        .set('Authorization', `Bearer ${employerToken}`)
+        .expect(200);
+    
+      expect(response.body.history).toBeInstanceOf(Array);
+      expect(response.body.history.length).toBeGreaterThan(0);
+    
+      const userHistoryItem = response.body.history.find((item) => item.email === email);
+      expect(userHistoryItem).toBeDefined();
+      expect(userHistoryItem).toHaveProperty('email', email);
+      expect(userHistoryItem).toHaveProperty('start_date');
+      expect(userHistoryItem).toHaveProperty('end_date');
+      
+      const lastEntryIndex = response.body.history.length - 1;
+      const lastEntry = response.body.history[lastEntryIndex];
+      expect(lastEntry).toHaveProperty('description', 'Completed task XYZ');
     });
   
     test('should return 403 for employees trying to use the q query parameter', async () => {
@@ -224,6 +245,5 @@ describe('Work Time Tracking App Integration Tests', () => {
     });
 
   });
-
 
 });
