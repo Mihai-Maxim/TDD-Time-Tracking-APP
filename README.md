@@ -18,7 +18,7 @@ The employer has access to view the work history of any employee, while an emplo
 
 2. Create a `/logout` endpoint that logs the users out of the platform.  
 * It invalidates the Authorization token received from the `/login` endpoint and returns a `200` status code.  
-* If the Authorization header is not provided, the endpoint returns a `400` status code.  
+* If the Authorization header is expired or it was not provided, the endpoint returns a `400` status code.  
 
 3. Create a `/check-in` endpoint that starts a work session for the logged-in employee.  
 * The endpoint should only be accessible to employees.  
