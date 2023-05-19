@@ -16,11 +16,11 @@ const authMiddleware = async (req, res, next) => {
                 })
             }
 
-            // if (!authTokens.get(authorization)) {
-            //     return res.status(403).json({
-            //         error: "authentication required"
-            //     })
-            // }
+            if (!authTokens.get(authorization)) {
+                return res.status(403).json({
+                    error: "authentication required"
+                })
+            }
 
             const myUsers = await UsersFunctions.getUsersBy({
                 email: user.email,
@@ -33,8 +33,6 @@ const authMiddleware = async (req, res, next) => {
                     error: "authentication required"
                 })
             }
-
-            // console.logk(myUsers)
 
             req.user = myUsers[0]
     
