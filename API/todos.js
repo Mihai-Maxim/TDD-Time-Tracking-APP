@@ -237,12 +237,7 @@ router.get("/history",
         res.status(200).json({
             history: foundData
         })
-
-
-
-
-
-
+        
     })
 
 router.post("/logout", (req, res) => {
