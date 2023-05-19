@@ -85,8 +85,9 @@ describe('Work Time Tracking App Integration Tests', () => {
 
     test('should return 400 if Authorization header is invalid/expired', async () => {
       await request(app)
+        .post("/logout")
         .set('Authorization', `Bearer ${"hello there"}`)
-        .post('/logout').expect(400);
+        .expect(400);
     });
   });
 
