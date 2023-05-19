@@ -227,19 +227,19 @@ const DataDB = function (workData, users) {
             }
         }, 
         UsersFunctions: {
-            getAllWorkData: async () => {
+            getAllUsersData: async () => {
                 return getAll(Users)
             },
-            insertWorkData: async (data, index) => {
+            insertUsersData: async (data, index) => {
                 return insert(data, index, Users)
             },
-            getWorkData: async (index) => {
+            getUsersData: async (index) => {
                 return get(index, false, Users)
             },
-            removeWorkData: async (index) => {
+            removeUsersData: async (index) => {
                 return remove(index, Users)
             },
-            updateWorkData: async (index, newData) => {
+            updateUsersData: async (index, newData) => {
                 return update(index, newData, Users)
             },
             getUsersBy: async (matchData) => {
