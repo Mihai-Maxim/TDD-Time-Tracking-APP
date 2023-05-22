@@ -74,37 +74,37 @@ router.post("/check-in",
                 return res.status(200).json({
                     success: false, check_in_date: lastWorkSessions[0].start_date
                 })
-            } else {
-                // discard all unclosed work sessions
-                await WorkDataFunctions.removeWorkDataBy({
-                    email: req.user.email,
-                    end_date: null
-                })
+            } 
 
-                await UsersFunctions.updateUsersBy({ email: req.user.email }, { checkedIn: false })
-
-                return res.status(200).json({
-                    success: false, error: "something went wrong, check in again!"
-                })
-            }
-
-        } else {
-            // create a new work session
-            const start_date = new Date().toISOString()
-
-            await WorkDataFunctions.insertWorkData({
+            // discard all unclosed work sessions
+            await WorkDataFunctions.removeWorkDataBy({
                 email: req.user.email,
-                start_date,
-                end_date: null,
-                description: null,
+                end_date: null
             })
 
-            await UsersFunctions.updateUsersBy({ email: req.user.email }, { checkedIn: true })
+            await UsersFunctions.updateUsersBy({ email: req.user.email }, { checkedIn: false })
+
             return res.status(200).json({
-                success: true, check_in_date: start_date
+                success: false, error: "something went wrong, check in again!"
             })
 
-        }  
+        } 
+        // create a new work session
+        const start_date = new Date().toISOString()
+
+        await WorkDataFunctions.insertWorkData({
+            email: req.user.email,
+            start_date,
+            end_date: null,
+            description: null,
+        })
+
+        await UsersFunctions.updateUsersBy({ email: req.user.email }, { checkedIn: true })
+        return res.status(200).json({
+            success: true, check_in_date: start_date
+        })
+
+        
     })
 
 router.post("/check-out",
@@ -169,20 +169,19 @@ router.post("/check-out",
                 ...completedSession
             })
 
-        } else {
-            // discard all unclosed work sessions
-            await WorkDataFunctions.removeWorkDataBy({
-                email: req.user.email,
-                end_date: null
-            })
+        } 
 
-            await UsersFunctions.updateUsersBy({ email: req.user.email }, { checkedIn: false })
+        // discard all unclosed work sessions
+        await WorkDataFunctions.removeWorkDataBy({
+            email: req.user.email,
+            end_date: null
+        })
 
-            return res.status(200).json({
-                success: false, error: "something went wrong, the last session was discarded, you may check in again!"
-            })
-        }
+        await UsersFunctions.updateUsersBy({ email: req.user.email }, { checkedIn: false })
 
+        return res.status(200).json({
+            success: false, error: "something went wrong, the last session was discarded, you may check in again!"
+        })
     
     })
 
@@ -224,7 +223,9 @@ router.get("/history",
         })
 
         if (targetEmployees.length === 1) {
+
             const targetEmployee = targetEmployees[0]
+            
             const foundData = await WorkDataFunctions.getWorkDataBy({
                 email: targetEmployee.email
             })
