@@ -112,7 +112,7 @@ const DataDB = function (workData, users) {
                 } catch (err) {
                     resolve(new Error("match_data_should_be_stringifiable"))
                 }
-            
+
                 const matchedData = array.filter(element => {
                     let isMatch = true
                     for (var k in matchData) {
@@ -136,12 +136,10 @@ const DataDB = function (workData, users) {
 
     const removeByMatch = async function (matchdata, array) {
         const targets = getByMatch(matchdata, array, true)
-        const indexes = targets.map(target => array.indexOf(target))
-        for (let i = 0; i < indexes.length; i++) {
-            await remove(indexes[i], array)
+        for (let i = 0; i < targets.length; i++) {
+            await remove(array.indexOf(targets[i]), array)
         }
-
-        resolve(indexes.length)
+        resolve(targets.length)
     }
 
     const updateByMatch = async function (matchdata, newData, array) {
@@ -150,7 +148,7 @@ const DataDB = function (workData, users) {
                 const targets = await getByMatch(matchdata, array, true)
                 for (let i = 0; i < targets.length; i++) {
                     let target = targets[i]
-                
+
                     for (var k in newData) {
                         target[k] = newData[k]
                     }
@@ -225,7 +223,7 @@ const DataDB = function (workData, users) {
             removeWorkDataBy: async (matchData) => {
                 return removeByMatch(matchData, WorkData)
             }
-        }, 
+        },
         UsersFunctions: {
             getAllUsersData: async () => {
                 return getAll(Users)

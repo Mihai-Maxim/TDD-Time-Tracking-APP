@@ -4,7 +4,7 @@ import authMiddleware from "./middleware/authMiddleware.js"
 import { dbConn } from "./mockedWorkDataDB.js"
 import onlyEmployeesMiddleware from "./middleware/onlyEmployees.js"
 import authTokens from "./tokens.js"
-
+import { CheckOutDescriptionSchema, LoginCredentialsSchema, combineErrorStrings } from "./validationSchemas.js"
 
 const { WorkDataFunctions, UsersFunctions } = dbConn
 
@@ -14,13 +14,24 @@ const router = express.Router()
 router.post("/login", async (req, res) => {
 
     try {
-        const { email, password } = req.body
 
-        if (!email || !password) {
+        const { value, error } = LoginCredentialsSchema.validate(req.body)
+
+        if (error) {
+            return res.status(400).json({
+                success: false,
+                error: combineErrorStrings(error)
+            })
+        }
+
+        if (!value) {
             return res.status(400).json({
                 error: "credentials must contain email and password!"
             })
         }
+
+        const { email, password } = value
+
         const users = await UsersFunctions.getUsersBy({
             email,
             password
@@ -119,14 +130,23 @@ router.post("/check-out",
     ],
     async (req, res) => {
 
-        if (!req.body || !req.body.description || typeof req.body.description !== "string") {
+        const { value, error } = CheckOutDescriptionSchema.validate(req.body)
+
+        if (error) {
             return res.status(400).json({
                 success: false,
-                error: "you must provide a JSON payload with a description string in order to check out"
+                error: combineErrorStrings(error)
             })
         }
 
-        const description = req.body.description
+        if (!value) {
+            return res.status(400).json({
+                success: false,
+                error: "payload must be a JSON that contains a description string"
+            })
+        }
+
+        const { description } = value
 
         if (!req.user.checkedIn) {
             return res.status(200).json({
@@ -225,7 +245,7 @@ router.get("/history",
         if (targetEmployees.length === 1) {
 
             const targetEmployee = targetEmployees[0]
-            
+
             const foundData = await WorkDataFunctions.getWorkDataBy({
                 email: targetEmployee.email
             })
