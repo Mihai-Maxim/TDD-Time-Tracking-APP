@@ -195,49 +195,48 @@ router.get("/history",
     async (req, res) => {
         const { q } = req.query
 
-        let targetEmployee
-
         if (!req.user.isEmployer && q) {
             return res.status(403).json({
                 error: "Employees cannot use the q query param!"
             })
         } 
 
-        if (q) {
-            const targetEmployees = await UsersFunctions.getUsersBy({
-                email: q,
-                isEmployer: false
+        if (req.user.isEmployer && !q) {
+            const foundData = await WorkDataFunctions.getAllWorkData()
+            return res.status(200).json({
+                history: foundData
             })
 
-            if (targetEmployees.length === 1) {
-                targetEmployee = targetEmployees[0]
-            } else {
-                return res.status(404).json({
-                    error: "Employee not found!"
-                })
-            }
         }
 
-        let foundData 
+        if (!req.user.isEmployer && !q) {
+            const foundData = await WorkDataFunctions.getWorkDataBy({
+                email: req.user.email
+            })
+            return res.status(200).json({
+                history: foundData
+            })
+        }
+      
+        const targetEmployees = await UsersFunctions.getUsersBy({
+            email: q,
+            isEmployer: false
+        })
 
-        if (targetEmployee) {
-            foundData = await WorkDataFunctions.getWorkDataBy({
+        if (targetEmployees.length === 1) {
+            const targetEmployee = targetEmployees[0]
+            const foundData = await WorkDataFunctions.getWorkDataBy({
                 email: targetEmployee.email
             })
-        } else {
-            if (!req.user.isEmployer) {
-                foundData = await WorkDataFunctions.getWorkDataBy({
-                    email: req.user.email
-                })
-            } else {
-                foundData = await WorkDataFunctions.getAllWorkData()
-            }
+            return res.status(200).json({
+                history: foundData
+            })
         }
 
-        res.status(200).json({
-            history: foundData
+        return res.status(404).json({
+            error: "Employee not found!"
         })
-        
+
     })
 
 router.post("/logout", (req, res) => {
